@@ -35,8 +35,22 @@ extensions = [
     'sphinx.ext.autodoc',
     'recommonmark', # use Sphinx-1.4 or newer
     'nbsphinx',
+    "sphinx_copybutton",
 ]
 
+mathjax_config = {
+    'tex2jax': {
+        'inlineMath': [ ["\\(","\\)"] ],
+        'displayMath': [["\\[","\\]"] ],
+    },
+}
+
+mathjax3_config = {
+  "tex": {
+    "inlineMath": [['\\(', '\\)']],
+    "displayMath": [["\\[", "\\]"]],
+  }
+}
 
 # Sphinx-apidoc variables
 apidoc_module_dir = "../deoxys_vision"
@@ -103,7 +117,11 @@ html_theme = 'sphinx_book_theme'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    "use_sidenotes": True,
+    "repository_url": "https://github.com/UT-Austin-RPL/deoxys_control",
+    "use_repository_button": True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
