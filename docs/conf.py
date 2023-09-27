@@ -119,7 +119,7 @@ html_theme = 'sphinx_book_theme'
 #
 html_theme_options = {
     "use_sidenotes": True,
-    "repository_url": "https://github.com/UT-Austin-RPL/deoxys_control",
+    "repository_url": "https://github.com/UT-Austin-RPL/deoxys_vision",
     "use_repository_button": True,
 }
 
