@@ -10,7 +10,7 @@ from gprs.utils import YamlConfig
 from gprs.utils.input_utils import input2action
 from gprs.utils.io_devices import SpaceMouse
 
-config_folder = os.path.join(os.path.expanduser("~/"), ".rpl_vision_utils/calibration_configuration")
+config_folder = os.path.join(os.path.expanduser("~/"), ".deoxys_vision/calibration_configuration")
 os.makedirs(os.path.join(os.path.expanduser("~/"), config_folder), exist_ok=True)
 
 

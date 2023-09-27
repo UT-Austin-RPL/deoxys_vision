@@ -5,8 +5,8 @@ import gprs.utils.transform_utils as T
 import init_path
 import numpy as np
 
-from rpl_vision_utils.k4a.k4a_interface import K4aInterface
-from rpl_vision_utils.utils.apriltag_detector import AprilTagDetector
+from deoxys_vision.k4a.k4a_interface import K4aInterface
+from deoxys_vision.utils.apriltag_detector import AprilTagDetector
 
 k4a_interface = K4aInterface()
 

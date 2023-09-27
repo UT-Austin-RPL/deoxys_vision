@@ -15,8 +15,8 @@ from deoxys.utils import load_yaml_config
 from deoxys.utils.input_utils import input2action
 from deoxys.utils.io_devices import SpaceMouse
 
-from rpl_vision_utils.networking.camera_redis_interface import CameraRedisSubInterface
-from rpl_vision_utils.experimental.calibration import EyeInHandCalibration, EyeToHandCalibration
+from deoxys_vision.networking.camera_redis_interface import CameraRedisSubInterface
+from deoxys_vision.experimental.calibration import EyeInHandCalibration, EyeToHandCalibration
 from urdf_models.urdf_models import URDFModel
 
 # folder_path = os.path.join(os.path.dirname(__file__))
@@ -28,13 +28,13 @@ def parse_args():
     parser.add_argument(
         "--config-folder",
         type=str,
-        default=os.path.expanduser("~/.rpl_vision_utils/calibration_configuration"),
+        default=os.path.expanduser("~/.deoxys_vision/calibration_configuration"),
     )
 
     parser.add_argument(
         "--result-folder",
         type=str,
-        default=os.path.expanduser("~/.rpl_vision_utils/calibration"),
+        default=os.path.expanduser("~/.deoxys_vision/calibration"),
     )
     
     parser.add_argument("--config-filename", type=str, default="joints_info.json")

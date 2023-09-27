@@ -2,7 +2,7 @@ import json
 
 import numpy as np
 
-from rpl_vision_utils import get_calibration_path
+from deoxys_vision import get_calibration_path
 
 def load_default_extrinsics(camera_id,
                             camera_type,

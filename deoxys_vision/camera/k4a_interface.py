@@ -9,7 +9,7 @@ from easydict import EasyDict
 from pyk4a import Config, PyK4A
 from pyk4a.calibration import CalibrationType
 
-from rpl_vision_utils.threading.threading_utils import Worker
+from deoxys_vision.threading.threading_utils import Worker
 
 
 def get_k4a_intrinsics_param(K_matrix: np.ndarray):

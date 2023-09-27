@@ -3,7 +3,7 @@ import numpy as np
 import pyrealsense2 as rs
 from easydict import EasyDict
 
-from rpl_vision_utils.threading.threading_utils import Worker
+from deoxys_vision.threading.threading_utils import Worker
 
 
 def get_rs_intrinsics_param(K_matrix: np.ndarray):

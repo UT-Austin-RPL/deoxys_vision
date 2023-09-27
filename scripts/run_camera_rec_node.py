@@ -10,9 +10,9 @@ import numpy as np
 import redis
 from easydict import EasyDict
 
-from rpl_vision_utils.networking.camera_redis_interface import CameraRedisPubInterface
-from rpl_vision_utils.camera.k4a_interface import K4aInterface
-from rpl_vision_utils.camera.rs_interface import RSInterface
+from deoxys_vision.networking.camera_redis_interface import CameraRedisPubInterface
+from deoxys_vision.camera.k4a_interface import K4aInterface
+from deoxys_vision.camera.rs_interface import RSInterface
 
 
 def main():

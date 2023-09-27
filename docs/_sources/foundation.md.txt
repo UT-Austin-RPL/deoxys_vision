@@ -1,0 +1,24 @@
+# Foundation for robot vision
+
+
+TODO
+
+
+## Math
+
+
+
+## Cameras
+
+
+
+
+## Markers
+
+
+### AprilTag
+
+
+
+### ArUco
+

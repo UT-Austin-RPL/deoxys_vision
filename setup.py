@@ -11,9 +11,9 @@ lines = [x for x in lines if '.png' not in x]
 long_description = ''.join(lines)
 
 setup(
-    name="rpl_vision_utils",
+    name="deoxys_vision",
     packages=[
-        package for package in find_packages() if package.startswith("rpl_vision_utils")
+        package for package in find_packages() if package.startswith("deoxys_vision")
     ],
     install_requires=[
     ],

@@ -16,9 +16,9 @@ from gprs.utils import load_yaml_config
 from gprs.utils.input_utils import input2action
 from gprs.utils.io_devices import SpaceMouse
 
-# from rpl_vision_utils.k4a.k4a_interface import K4aInterface
-from rpl_vision_utils.utils.apriltag_detector import AprilTagDetector
-from rpl_vision_utils.utils.transform_manager import RPLTransformManager
+# from deoxys_vision.k4a.k4a_interface import K4aInterface
+from deoxys_vision.utils.apriltag_detector import AprilTagDetector
+from deoxys_vision.utils.transform_manager import RPLTransformManager
 from urdf_models.urdf_models import URDFModel
 
 # folder_path = os.path.join(os.path.dirname(__file__))
@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument(
         "--config-folder",
         type=str,
-        default=os.path.expanduser("~/.rpl_vision_utils/calibration"),
+        default=os.path.expanduser("~/.deoxys_vision/calibration"),
     )
 
     parser.add_argument("--config-filename", type=str, default="joints_info.json")

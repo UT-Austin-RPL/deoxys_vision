@@ -1,0 +1,4 @@
+Basic usage
+===========
+
+Here we cover how we perform simple camera calibration. This needs to be done with our robot control framework `gprs`.
