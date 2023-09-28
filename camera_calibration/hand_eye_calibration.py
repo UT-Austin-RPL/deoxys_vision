@@ -140,9 +140,11 @@ def main():
     # Start Calibration
     if args.calibration_type == "eye-in-hand":
         calibration_class_name = "EyeInHandCalibration"
+        # hard-coded value, adjust based on your need
         tag_size = 0.080
     elif args.calibration_type == "eye-to-hand":
         calibration_class_name = "EyeToHandCalibration"
+        # hard-coded value, adjust based on your need
         tag_size = 0.05931
 
     with open(

@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--camera-type", type=str, choices=["k4a", "rs"])
     parser.add_argument("--camera-id", type=int, default=0)
 
-    parser.add_argument("--eval", action="store_true")
+    parser.add_argument("--save", action="store_true")
 
     parser.add_argument("--no-color", action="store_true")
 
@@ -107,7 +107,7 @@ def main():
         if node_config.use_color:
             img_color = capture["color"]
             color_img_name = f"{save_dir}/color_{img_counter:09d}.{color_file_ext}"
-            img_info["color"] = color_img_name
+            img_info["color_image_name"] = color_img_name
             img_info["intrinsics"]["color"] = camera_interface.get_color_intrinsics(mode="dict")
             intrinsics_matrix = camera_interface.get_color_intrinsics(mode="matrix")
             imgs["color"] = img_color
@@ -115,7 +115,7 @@ def main():
         if node_config.use_depth:
             img_depth = capture["depth"]
             depth_img_name = f"{save_dir}/depth_{img_counter:09d}.{depth_file_ext}"
-            img_info["depth"] = depth_img_name
+            img_info["depth_image_name"] = depth_img_name
             img_info["intrinsics"]["depth"] = camera_interface.get_depth_intrinsics(mode="dict")
             imgs["depth"] = img_depth
 
@@ -124,7 +124,7 @@ def main():
         camera2redis_pub_interface.set_img_info(img_info)
         camera2redis_pub_interface.set_img_buffer(imgs=imgs)
 
-        if not args.eval:
+        if args.save:
             if counter < COUNT_THRESH:
                 # Save img to tmp file
                 if node_config.use_color:

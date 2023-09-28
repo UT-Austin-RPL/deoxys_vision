@@ -38,23 +38,33 @@ def resize_img(img: np.ndarray,
     return resized_img
 
 
-def cv2_undistort(img: np.ndarray,
+def cv2_undistort(color_img: np.ndarray,
                   intrinsics_matrix,
                   distortion):
-    return cv2.undistort(img_color, intrinsics_matrix, distortion, None)
+    return cv2.undistort(color_img, intrinsics_matrix, distortion, None)
 
 
-def depth_to_rgb(depth_image):
+def depth_to_rgb(depth_img):
     # Normalize depth values between 0 and 1
-    normalized_depth = cv2.normalize(depth_image, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
+    normalized_depth = cv2.normalize(depth_img, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
 
     # Apply a colormap to the normalized depth image
     colormap = cv2.COLORMAP_JET
     depth_colormap = cv2.applyColorMap(np.uint8(normalized_depth * 255), colormap)
     return depth_colormap
 
-def load_depth(depth_image_name):
-    return cv2.imread(depth_image_name, cv2.IMREAD_UNCHANGED)
+def load_depth(depth_img_name):
+    return cv2.imread(depth_img_name, cv2.IMREAD_UNCHANGED)
 
-def save_depth(depth_image_name, depth_image):
-    cv2.imwrite(depth_image_name, cv2.cvtColor(depth_image, cv2.CV_16U))    
+def save_depth(depth_img_name, depth_img):
+    cv2.imwrite(depth_img_name, cv2.cvtColor(depth_img, cv2.CV_16U))    
+
+def preprocess_color(color_img, flip_channel=True):
+    if flip_channel:
+        return np.ascontiguousarray(cv2.cvtColor(color_img, cv2.COLOR_BGR2RGB))
+    else:
+        return np.ascontiguousarray(color_img)
+    
+def preprocess_depth(depth_img):
+    return np.ascontiguousarray(depth_img)
+    
