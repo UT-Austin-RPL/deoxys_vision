@@ -13,7 +13,7 @@ from easydict import EasyDict
 from deoxys_vision.networking.camera_redis_interface import CameraRedisPubInterface
 from deoxys_vision.camera.k4a_interface import K4aInterface
 from deoxys_vision.camera.rs_interface import RSInterface
-from deoxys_vision.img_utils import preprocess_color, preprocess_depth
+from deoxys_vision.utils.img_utils import preprocess_color, preprocess_depth
 
 
 def main():
@@ -84,9 +84,12 @@ def main():
             enabled=node_config.use_color, img_w=640, img_h=480, img_format=rs.format.bgr8, fps=30
         )
 
-        depth_cfg = EasyDict(
-            enabled=node_config.use_depth, img_w=640, img_h=480, img_format=rs.format.z16, fps=30
-        )
+        if args.use_depth:
+            depth_cfg = EasyDict(
+                enabled=node_config.use_depth, img_w=640, img_h=480, img_format=rs.format.z16, fps=30
+            )
+        else:
+            depth_cfg = None
 
         pc_cfg = EasyDict(enabled=False)
         camera_interface = RSInterface(
@@ -133,6 +136,7 @@ def main():
         if node_config.use_color:
             color_img = preprocess_color(capture["color"], flip_channel=camera_config.rgb_convention == "rgb")
             color_img_name = f"{save_dir}/color_{img_counter:09d}.{file_ext}"
+            print(color_img_name)
             img_info["color_img_name"] = color_img_name
             img_info["intrinsics"]["color"] = camera_interface.get_color_intrinsics(mode="dict")
             # img_info["distortion"]["color"] = camera_interface.get_color_distortion()
@@ -149,7 +153,7 @@ def main():
             depth_img_name = f"{save_dir}/depth_{img_counter:09d}.{file_ext}"
             img_info["depth_img_name"] = depth_img_name
             img_info["intrinsics"]["depth"] = camera_interface.get_depth_intrinsics(mode="dict")
-            depth_distortion = camera_interface.get_depth_distortion()
+            # depth_distortion = camera_interface.get_depth_distortion()
             intrinsics_depth_matrix = camera_interface.get_depth_intrinsics(mode="matrix")            
             imgs["depth"] = depth_img
 
@@ -173,7 +177,10 @@ def main():
 
         # r.set(f"camera_{camera_num}::last_depth_img", depth_img.tobytes())
         if args.visualization:
-            cv2.imshow("", imgs["color"])
+            if args.rgb_convention == "rgb":
+                cv2.imshow("", imgs["color"][..., ::-1])
+            else:
+                cv2.imshow("", imgs["color"])
             if args.depth_visualization:
                 cv2.imshow("depth", imgs["depth"] * 0.001)
             cv2.waitKey(10)
