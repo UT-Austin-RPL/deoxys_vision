@@ -63,7 +63,8 @@ def main():
     host = "172.16.0.1"
     port = 6379
     camera2redis_pub_interface = CameraRedisPubInterface(
-        redis_host=host, redis_port=port, camera_id=camera_id
+        redis_host=host, redis_port=port, camera_id=camera_id,
+        custom_camera_name=f"{args.camera_type}_camera_{camera_id}"
     )
     # Check redis if the camera id is occupied or not.
     camera_interface = None
