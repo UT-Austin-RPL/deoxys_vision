@@ -15,6 +15,7 @@ from deoxys.utils import load_yaml_config
 from deoxys.utils.input_utils import input2action
 from deoxys.utils.io_devices import SpaceMouse
 
+from deoxys_vision.utils.camera_utils import assert_camera_ref_convention, get_camera_info
 from deoxys_vision.networking.camera_redis_interface import CameraRedisSubInterface
 from deoxys_vision.experimental.calibration import EyeInHandCalibration, EyeToHandCalibration
 from urdf_models.urdf_models import URDFModel
@@ -39,9 +40,7 @@ def parse_args():
     
     parser.add_argument("--config-filename", type=str, default="joints_info.json")
 
-    parser.add_argument("--camera-id", type=int, default=0)
-
-    parser.add_argument("--camera-type", type=str, default="k4a")
+    parser.add_argument("--camera-ref", type=str)
 
     parser.add_argument("--use-saved-images", action="store_true")
 
@@ -57,6 +56,10 @@ def parse_args():
 def main():
 
     args = parse_args()
+    assert_camera_ref_convention(args.camera_ref)
+    camera_info = get_camera_info(args.camera_ref)
+
+
     # load a list of joints to move
     joints_json_file_name = f"{args.config_folder}/{args.config_filename}"
 
@@ -68,12 +71,6 @@ def main():
 
     use_saved_images = args.use_saved_images
 
-    identity_matrix_3x3 = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-
-    identity_matrix_4x4 = np.array(
-        [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
-    )
-
     new_joint_list = []
 
     calibration_img_folder = "calibration_imgs"
@@ -81,7 +78,7 @@ def main():
     # Image Collection
     if not use_saved_images:
         os.makedirs(calibration_img_folder, exist_ok=True)
-        camera_id = args.camera_id
+        camera_id = camera_info.camera_id
         cr_interface = CameraRedisSubInterface(camera_id=camera_id, use_depth=True)
         cr_interface.start()
 
@@ -130,7 +127,7 @@ def main():
             time.sleep(0.3)
 
         with open(
-            os.path.join(args.config_folder, f"camera_{args.camera_id}_{args.camera_type}.json"),
+            os.path.join(args.config_folder, f"{camera_info}.json"),
             "w",
         ) as f:
             json.dump(intrinsics, f)
@@ -148,7 +145,7 @@ def main():
         tag_size = 0.05931
 
     with open(
-        os.path.join(args.config_folder, f"camera_{args.camera_id}_{args.camera_type}.json"), "r"
+        os.path.join(args.config_folder, f"{camera_info.camera_name}.json"), "r"
     ) as f:
         intrinsics = json.load(f)
 
@@ -176,7 +173,7 @@ def main():
         with open(
             os.path.join(
                 args.result_folder,
-                f"camera_{args.camera_id}_{args.camera_type}_{calibration_method}_extrinsics.json",
+                f"{camera_info.camera_name}_{calibration_method}_extrinsics.json",
             ),
             "w",
         ) as f:

@@ -11,7 +11,11 @@ class CameraRedisPubInterface:
     This is the Python Interface for writing img info / img data buffer to redis server.
     """
 
-    def __init__(self, redis_host="172.16.0.1", redis_port=6379, camera_id=0, custom_camera_name=None):
+    def __init__(self, 
+                 camera_info,
+                 redis_host="172.16.0.1", 
+                 redis_port=6379, 
+                 custom_camera_name=None):
         self.redis_host = redis_host
         self.redis_port = redis_port
         self.info_redis = redis.StrictRedis(
@@ -23,10 +27,10 @@ class CameraRedisPubInterface:
         )
 
         if custom_camera_name is None:
-            self.camera_name = f"camera_{camera_id}"
+            self.camera_name = camera_info.camera_name
         else:
             self.camera_name = custom_camera_name
-        self.camera_id = camera_id
+        self.camera_id = camera_info.camera_id
 
         for key in self.info_redis.scan_iter(f"{self.camera_name}*"):
             self.info_redis.delete(key)
@@ -43,8 +47,8 @@ class CameraRedisPubInterface:
 
     def set_img_buffer(self, imgs):
         if "color" in imgs:
-            img_color = imgs["color"]
             h, w, c = imgs["color"].shape
+            # This is much faster than other encoding methods.
             shape = struct.pack(">III", h, w, c)
             encoded_color = shape + imgs["color"].tobytes()
             self.img_redis.set(f"{self.camera_name}::last_img_color", encoded_color)
@@ -70,9 +74,11 @@ class CameraRedisSubInterface:
 
     def __init__(
         self,
+        camera_info,
         redis_host="172.16.0.1",
         redis_port=6379,
-        camera_id=0,
+        # camera_id=0,
+        # camera_type="rs",  # "rs" or "k4a
         use_color=True,
         use_depth=False,
         custom_camera_name=None,
@@ -88,11 +94,11 @@ class CameraRedisSubInterface:
         )
 
         if custom_camera_name is None:
-            self.camera_name = f"camera_{camera_id}"
+            self.camera_name = camera_info.camera_name
         else:
             self.camera_name = custom_camera_name
         
-        self.camera_id = camera_id
+        self.camera_id = camera_info.camera_id
         for key in self.info_redis.scan_iter(f"{self.camera_name}*"):
             self.info_redis.delete(key)
 
@@ -137,8 +143,6 @@ class CameraRedisSubInterface:
         return img_info
 
     def get_img(self):
-        # TODO(Yifeng): Test if redis is faster or reading image from file is faster.
-
         img_color = None
         img_depth = None
         if self.use_color:

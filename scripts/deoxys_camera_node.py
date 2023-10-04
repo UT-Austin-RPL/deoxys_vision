@@ -10,16 +10,20 @@ import numpy as np
 import redis
 from easydict import EasyDict
 
+
 from deoxys_vision.networking.camera_redis_interface import CameraRedisPubInterface
 from deoxys_vision.camera.k4a_interface import K4aInterface
 from deoxys_vision.camera.rs_interface import RSInterface
 from deoxys_vision.utils.img_utils import preprocess_color, preprocess_depth
+from deoxys_vision.utils.camera_utils import assert_camera_ref_convention, get_camera_info
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--camera-type", type=str, choices=["k4a", "rs"])
-    parser.add_argument("--camera-id", type=int, default=0)
+
+    parser.add_argument("--host", type=str, default="172.16.0.1")
+    parser.add_argument("--port", type=int, default=6379)
+    parser.add_argument("--camera-ref", type=str)
 
     parser.add_argument("--eval", action="store_true")
 
@@ -39,11 +43,13 @@ def main():
 
     args = parser.parse_args()
 
+    assert_camera_ref_convention(args.camera_ref)
+    camera_info = get_camera_info(args.camera_ref)
     # print information about the cameras to run
 
     camera_config = EasyDict(
-        camera_type=args.camera_type,
-        camera_id=args.camera_id,
+        camera_type=camera_info.camera_type,
+        camera_id=camera_info.camera_id,
         use_rgb=args.use_rgb,
         use_depth=args.use_depth,
         use_rec=args.use_rec,
@@ -58,13 +64,13 @@ def main():
     if args.use_rec:
         print("Note that Images are rectified with undistortion")
 
-    camera_id = args.camera_id
+    camera_id = camera_info.camera_id
 
-    host = "172.16.0.1"
-    port = 6379
+    host = args.host
+    port = args.port
     camera2redis_pub_interface = CameraRedisPubInterface(
-        redis_host=host, redis_port=port, camera_id=camera_id,
-        custom_camera_name=f"{args.camera_type}_camera_{camera_id}"
+        camera_info=camera_info,
+        redis_host=host, redis_port=port, 
     )
     # Check redis if the camera id is occupied or not.
     camera_interface = None
@@ -76,9 +82,9 @@ def main():
     if not args.use_depth:
         node_config.use_depth = False
 
-    if args.camera_type == "k4a":
+    if camera_info.camera_type == "k4a":
         camera_interface = K4aInterface()
-    elif args.camera_type == "rs":
+    elif camera_info.camera_type == "rs":
         import pyrealsense2 as rs
 
         color_cfg = EasyDict(
@@ -100,7 +106,7 @@ def main():
     camera_interface.start()
     print("Starting")
     t = time.time()
-    save_dir = f"/tmp/{args.camera_type}_{camera2redis_pub_interface.camera_name}_{t}"
+    save_dir = f"/tmp/{camera_info.camera_type}_{camera2redis_pub_interface.camera_name}_{t}"
     file_ext = "jpg"
     camera_num = 0
     os.makedirs(save_dir)
@@ -138,7 +144,7 @@ def main():
         }
         imgs = {}
         img_info["time"] = t
-        img_info["camera_type"] = args.camera_type
+        img_info["camera_type"] = camera_info.camera_type
 
         img_info["intrinsics"] = {}
         if node_config.use_color:
