@@ -128,7 +128,14 @@ def main():
             counter = 0
         else:
             counter += 1
-        img_info = {}
+        img_info = {
+            "color_img_name": "",
+            "depth_img_name": "",
+            "intrinsics": {
+                "color": [],
+                "depth": []
+            }
+        }
         imgs = {}
         img_info["time"] = t
         img_info["camera_type"] = args.camera_type
@@ -137,7 +144,7 @@ def main():
         if node_config.use_color:
             color_img = preprocess_color(capture["color"], flip_channel=camera_config.rgb_convention == "rgb")
             color_img_name = f"{save_dir}/color_{img_counter:09d}.{file_ext}"
-            print(color_img_name)
+
             img_info["color_img_name"] = color_img_name
             img_info["intrinsics"]["color"] = camera_interface.get_color_intrinsics(mode="dict")
             # img_info["distortion"]["color"] = camera_interface.get_color_distortion()
