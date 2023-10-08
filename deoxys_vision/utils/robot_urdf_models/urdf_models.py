@@ -1,9 +1,10 @@
+import os
 import pybullet as p
 import pybullet_data
 
 
 class PandaURDFModel:
-    def __init__(self, use_visualizer=False):
+    def __init__(self, asset_folder, use_visualizer=False):
         p_mode = p.GUI
         if use_visualizer is False:
             p_mode = p.DIRECT
@@ -11,7 +12,7 @@ class PandaURDFModel:
         p.configureDebugVisualizer(p.COV_ENABLE_SHADOWS, 1)
         p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         self.robot_uid = p.loadURDF(
-            "urdf_models/assets/franka_panda/franka_panda_arm_marker.urdf",
+            os.path.join(asset_folder, "assets/franka_panda/franka_panda_arm_marker.urdf"),
             [0.0, 0.0, 0.0],
             p.getQuaternionFromEuler([0.0, 0.0, 0.0]),
         )

@@ -18,7 +18,6 @@ from deoxys.utils.io_devices import SpaceMouse
 from deoxys_vision.utils.camera_utils import assert_camera_ref_convention, get_camera_info
 from deoxys_vision.networking.camera_redis_interface import CameraRedisSubInterface
 from deoxys_vision.experimental.calibration import EyeInHandCalibration, EyeToHandCalibration
-from urdf_models.urdf_models import URDFModel
 
 # folder_path = os.path.join(os.path.dirname(__file__))
 
@@ -79,7 +78,7 @@ def main():
     if not use_saved_images:
         os.makedirs(calibration_img_folder, exist_ok=True)
         camera_id = camera_info.camera_id
-        cr_interface = CameraRedisSubInterface(camera_id=camera_id, use_depth=True)
+        cr_interface = CameraRedisSubInterface(camera_info=camera_info, use_depth=True)
         cr_interface.start()
 
         # Load robot controller configs
@@ -127,7 +126,7 @@ def main():
             time.sleep(0.3)
 
         with open(
-            os.path.join(args.config_folder, f"{camera_info}.json"),
+            os.path.join(args.config_folder, f"{camera_info.camera_name}.json"),
             "w",
         ) as f:
             json.dump(intrinsics, f)
@@ -170,16 +169,19 @@ def main():
         results[calibration_method]["rot"] = rot
     # Save calibration result
     for calibration_method in results.keys():
-        with open(
-            os.path.join(
+        output_json_file_name =  os.path.join(
                 args.result_folder,
                 f"{camera_info.camera_name}_{calibration_method}_extrinsics.json",
-            ),
+            )
+        with open(
+           output_json_file_name,
             "w",
         ) as f:
             extrinsics = {"translation": results[calibration_method]["pos"].tolist(),
                           "rotation": results[calibration_method]["rot"].tolist()}
             json.dump(extrinsics, f)
+
+        print(f"calibration result saved at: {output_json_file_name}")
     
     # for idx in range(len(joint_list)):
     #     rpl_transform_manager.add_transform(f"cam_view_{idx}", f"ee_{idx}", R, t)

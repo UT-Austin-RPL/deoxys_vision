@@ -155,9 +155,40 @@ def main():
             img_info["intrinsics"]["color"] = camera_interface.get_color_intrinsics(mode="dict")
             # img_info["distortion"]["color"] = camera_interface.get_color_distortion()
             intrinsics_matrix = camera_interface.get_color_intrinsics(mode="matrix")
-            color_distortion = camera_interface.get_color_distortion()
-
+            color_distortion = camera_interface.get_color_distortion()  
             if camera_config.use_rec:
+                if camera_id == 0:
+                    color_distortion = np.array([[-3.21808020e+01],
+                                        [ 1.56948008e+02],
+                                        [ 1.08836334e-04],
+                                        [-3.35339398e-03],
+                                        [ 2.35932470e+03],
+                                        [-3.23246223e+01],
+                                        [ 1.62487586e+02],
+                                        [ 2.30373935e+03],
+                                        [ 0.00000000e+00],
+                                        [ 0.00000000e+00],
+                                        [ 0.00000000e+00],
+                                        [ 0.00000000e+00],
+                                        [ 0.00000000e+00],
+                                        [ 0.00000000e+00]])
+                    
+                else:
+                    color_disotortion = np.array(
+                        [[-1.03494286e+01],
+                        [ 1.81229044e+02],
+                        [-1.33669038e-03],
+                        [ 3.86838065e-03],
+                        [ 6.03400600e+02],
+                        [-1.04039164e+01],
+                        [ 1.82251593e+02],
+                        [ 5.75642409e+02],
+                        [ 0.00000000e+00],
+                        [ 0.00000000e+00],
+                        [ 0.00000000e+00],
+                        [ 0.00000000e+00],
+                        [ 0.00000000e+00],
+                        [ 0.00000000e+00]])      
                 imgs["color"] = cv2.undistort(color_img, intrinsics_matrix, color_distortion, None)
             else:
                 imgs["color"] = color_img

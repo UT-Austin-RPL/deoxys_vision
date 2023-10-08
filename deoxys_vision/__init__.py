@@ -1,4 +1,7 @@
 import os
+
+ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
+
 calibration_config_folder = os.path.join(os.path.expanduser("~/"), ".deoxys_vision/calibration_configuration")
 calibration_folder = os.path.join(os.path.expanduser("~/"), ".deoxys_vision/calibration")
 

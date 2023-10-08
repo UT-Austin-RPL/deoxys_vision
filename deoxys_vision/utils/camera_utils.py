@@ -3,8 +3,14 @@ from easydict import EasyDict
 
 def assert_camera_ref_convention(camera_reference, 
                        available_camera_types=["rs", "k4a"]):
-    
-    assert(isinstance(camera_reference, str)), "camera_id must be a string"
+    """Check the camera reference convention. You need to check every camera separately.
+
+    Args:
+        camera_reference (str): _description_
+        available_camera_types (list, optional): _description_. Defaults to ["rs", "k4a"].
+    """
+   
+    assert(isinstance(camera_reference, str)), f"camera ref must be a string, got {type(camera_reference)} which is {camera_reference}-"
     camera_id = int(camera_reference.split("_")[-1])
     camera_type = camera_reference.split("_")[0]
     assert(camera_type in available_camera_types), f"camera_type must be one of {available_camera_types}, got {camera_type}"
