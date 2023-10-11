@@ -55,7 +55,7 @@ def main():
         use_rec=args.use_rec,
         rgb_convention=args.rgb_convention,
     )
-    print("This node runs with the camera {camera_cofnig.camera_type} with id {camera_config.camera_id}")
+    print(f"This node runs with the camera {camera_config.camera_type} with id {camera_config.camera_id}")
     print("The node will publish the following data:")
     if args.use_rgb:
         print("- Color image")
@@ -91,12 +91,12 @@ def main():
             enabled=node_config.use_color, img_w=640, img_h=480, img_format=rs.format.bgr8, fps=30
         )
 
-        if args.use_depth:
-            depth_cfg = EasyDict(
-                enabled=node_config.use_depth, img_w=640, img_h=480, img_format=rs.format.z16, fps=30
-            )
-        else:
-            depth_cfg = None
+        # if args.use_depth:
+        depth_cfg = EasyDict(
+            enabled=node_config.use_depth, img_w=640, img_h=480, img_format=rs.format.z16, fps=30
+        )
+        # else:
+        #     depth_cfg = None
 
         pc_cfg = EasyDict(enabled=False)
         camera_interface = RSInterface(
@@ -115,7 +115,7 @@ def main():
     counter = COUNT_THRESH
 
     img_counter = 0
-    freq = 50.0
+    freq = 30.0
     while True:
         start_time = time.time_ns()
 
@@ -124,7 +124,7 @@ def main():
         if capture is None:
             continue
 
-        # t = time.time_ns()
+        t = time.time_ns()
         if capture is None:
             continue
 
@@ -149,61 +149,68 @@ def main():
         img_info["intrinsics"] = {}
         if node_config.use_color:
             color_img = preprocess_color(capture["color"], flip_channel=camera_config.rgb_convention == "rgb")
-            color_img_name = f"{save_dir}/color_{img_counter:09d}.{file_ext}"
+            color_img_name = f"{save_dir}/color_{img_counter:09d}"
 
             img_info["color_img_name"] = color_img_name
             img_info["intrinsics"]["color"] = camera_interface.get_color_intrinsics(mode="dict")
             # img_info["distortion"]["color"] = camera_interface.get_color_distortion()
             intrinsics_matrix = camera_interface.get_color_intrinsics(mode="matrix")
             color_distortion = camera_interface.get_color_distortion()  
+            
             if camera_config.use_rec:
-                if camera_id == 0:
-                    color_distortion = np.array([[-3.21808020e+01],
-                                        [ 1.56948008e+02],
-                                        [ 1.08836334e-04],
-                                        [-3.35339398e-03],
-                                        [ 2.35932470e+03],
-                                        [-3.23246223e+01],
-                                        [ 1.62487586e+02],
-                                        [ 2.30373935e+03],
-                                        [ 0.00000000e+00],
-                                        [ 0.00000000e+00],
-                                        [ 0.00000000e+00],
-                                        [ 0.00000000e+00],
-                                        [ 0.00000000e+00],
-                                        [ 0.00000000e+00]])
-                    
-                else:
-                    color_disotortion = np.array(
-                        [[-1.03494286e+01],
-                        [ 1.81229044e+02],
-                        [-1.33669038e-03],
-                        [ 3.86838065e-03],
-                        [ 6.03400600e+02],
-                        [-1.04039164e+01],
-                        [ 1.82251593e+02],
-                        [ 5.75642409e+02],
-                        [ 0.00000000e+00],
-                        [ 0.00000000e+00],
-                        [ 0.00000000e+00],
-                        [ 0.00000000e+00],
-                        [ 0.00000000e+00],
-                        [ 0.00000000e+00]])      
+                if camera_info.camera_type == "rs":
+                    if camera_id == 0:
+                        color_distortion = np.array([[-3.21808020e+01],
+                                            [ 1.56948008e+02],
+                                            [ 1.08836334e-04],
+                                            [-3.35339398e-03],
+                                            [ 2.35932470e+03],
+                                            [-3.23246223e+01],
+                                            [ 1.62487586e+02],
+                                            [ 2.30373935e+03],
+                                            [ 0.00000000e+00],
+                                            [ 0.00000000e+00],
+                                            [ 0.00000000e+00],
+                                            [ 0.00000000e+00],
+                                            [ 0.00000000e+00],
+                                            [ 0.00000000e+00]])
+                        
+                    else:
+                        color_disotortion = np.array(
+                            [[-1.03494286e+01],
+                            [ 1.81229044e+02],
+                            [-1.33669038e-03],
+                            [ 3.86838065e-03],
+                            [ 6.03400600e+02],
+                            [-1.04039164e+01],
+                            [ 1.82251593e+02],
+                            [ 5.75642409e+02],
+                            [ 0.00000000e+00],
+                            [ 0.00000000e+00],
+                            [ 0.00000000e+00],
+                            [ 0.00000000e+00],
+                            [ 0.00000000e+00],
+                            [ 0.00000000e+00]])      
                 imgs["color"] = cv2.undistort(color_img, intrinsics_matrix, color_distortion, None)
             else:
                 imgs["color"] = color_img
 
         if node_config.use_depth:
             depth_img = preprocess_depth(capture["depth"])
-            depth_img_name = f"{save_dir}/depth_{img_counter:09d}.{file_ext}"
+            depth_img_name = f"{save_dir}/depth_{img_counter:09d}"
             img_info["depth_img_name"] = depth_img_name
             img_info["intrinsics"]["depth"] = camera_interface.get_depth_intrinsics(mode="dict")
             # depth_distortion = camera_interface.get_depth_distortion()
             intrinsics_depth_matrix = camera_interface.get_depth_intrinsics(mode="matrix")            
             imgs["depth"] = depth_img
 
+        # print(color_img_name, ": ", img_info["time"])
         camera2redis_pub_interface.set_img_info(img_info)
         camera2redis_pub_interface.set_img_buffer(imgs=imgs)
+
+        print(img_counter)
+        if counter < COUNT_THRESH:
+            img_counter += 1
 
         # if not args.eval:
         #     if counter < COUNT_THRESH:
@@ -234,6 +241,7 @@ def main():
         time_interval = (end_time - start_time) / (10 ** 9)
         if time_interval < 1.0 / freq:
             time.sleep(1.0 / freq - time_interval)
+            print(f"The camera node only took {time_interval} to transmit image")
 
         if camera2redis_pub_interface.finished:
             break
