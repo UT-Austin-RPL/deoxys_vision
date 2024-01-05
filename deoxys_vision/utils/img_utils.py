@@ -57,7 +57,29 @@ def load_depth(depth_img_name):
     return cv2.imread(depth_img_name, cv2.IMREAD_UNCHANGED)
 
 def save_depth(depth_img_name, depth_img):
-    cv2.imwrite(depth_img_name, cv2.cvtColor(depth_img, cv2.CV_16U))    
+    assert(depth_img_name.endswith(".tiff")), "You are not using tiff file for saving uint16 data. Things will be screwed."
+    cv2.imwrite(depth_img_name, cv2.cvtColor(depth_img, cv2.CV_16U))
+
+def load_depth_in_rgb(depth_img_name):
+    rgb_img = cv2.imread(depth_img_name).astype(np.uint8)
+    
+    depth_img = np.zeros((rgb_img.shape[0], rgb_img.shape[1])).astype(np.uint16)
+    depth_img = rgb_img[..., 1].astype(np.uint16) << 8 | rgb_img[..., 2].astype(np.uint16)
+
+    return depth_img
+
+def save_depth_in_rgb(depth_img_name, depth_img):
+    """
+    Saving depth image in the format of rgb images. The nice thing is that we can leverage the efficient PNG encoding to save almost 50% spaces compared to using tiff.
+    """
+    assert(depth_img.dtype == np.uint16)
+    assert(depth_img_name.endswith(".png")), "You are not using lossless saving. Depth image will be messed up if you want to use rgb format."
+    higher_bytes = depth_img >> 8
+    lower_bytes = depth_img & 0xFF
+    depth_rgb_img = np.zeros((depth_img.shape[0], depth_img.shape[1], 3)).astype(np.uint8)
+    depth_rgb_img[..., 1] = higher_bytes.astype(np.uint8)
+    depth_rgb_img[..., 2] = lower_bytes.astype(np.uint8)
+    cv2.imwrite(depth_img_name, depth_rgb_img)
 
 def preprocess_color(color_img, flip_channel=True):
     if flip_channel:
