@@ -60,7 +60,8 @@ def main():
 
 
     # load a list of joints to move
-    joints_json_file_name = f"{args.config_folder}/{args.config_filename}"
+    # joints_json_file_name = f"{args.config_folder}/{args.config_filename}"
+    joints_json_file_name = args.config_filename
 
     joint_info = json.load(open(joints_json_file_name, "r"))
     joint_list = joint_info["joints"]
@@ -118,7 +119,7 @@ def main():
 
             color_img = imgs["color"]
             depth_img = imgs["depth"]
-            cv2.imshow("", color_img)
+            cv2.imshow("", color_img[..., ::-1])
             cv2.imwrite(f"{calibration_img_folder}/{idx}_color.png", color_img)
             cv2.imwrite(f"{calibration_img_folder}/{idx}_depth.png", depth_img)
             cv2.waitKey(1)
