@@ -136,3 +136,20 @@ Now you should be able to use `pyrealsense2`.
 ``` shell
 /usr/bin/Intel.Realsense.CustomRW -sn 017322071705 -w -f update_calibration.xml
 ```
+
+# Usage
+
+Under the main folder, run:
+``` shell
+python scripts/deoxys_camera_node.py --camera-ref rs_0 --use-rgb
+--use-depth --eval --use-rec --visualization
+```
+If you want to specify ip (e.g. localhost), you should add an argument
+`--host IP_ADDR`
+
+Currently we use redis server. Follow the instruction of their
+[official
+documentation](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-linux/). After
+installation, edit the file `/etc/redis/redis.conf` with sudo access,
+comment out the original line of `bind 127.0.0.1 ::1` and add a new
+line that binds to your own IP. 

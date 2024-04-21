@@ -51,18 +51,18 @@ def write_calibrated_extrinsics(data,
     return default_extrinsic_json_file
 
 
-def load_default_extrinsics(camera_id,
-                            camera_type,
-                            calibration_method="tsai",
-                            fmt="homogeneous"):
-    default_extrinsic_json_file = os.path.join(get_calibration_path("results"),
-                                               f"camera_{camera_type}_{camera_id}_{calibration_method}_extrinsics.json")
+# def load_default_extrinsics(camera_id,
+#                             camera_type,
+#                             calibration_method="tsai",
+#                             fmt="homogeneous"):
+#     default_extrinsic_json_file = os.path.join(get_calibration_path("results"),
+#                                                f"camera_{camera_type}_{camera_id}_{calibration_method}_extrinsics.json")
     
-    assert(os.path.exists(default_extrinsic_json_file)), f"{default_extrinsic_json_file} needs to exist"
+#     assert(os.path.exists(default_extrinsic_json_file)), f"{default_extrinsic_json_file} needs to exist"
 
-    with open(default_extrinsic_json_file, "r") as f:
-        data = json.load(f)
-    return get_extrinsics_data(data, fmt)
+#     with open(default_extrinsic_json_file, "r") as f:
+#         data = json.load(f)
+#     return get_extrinsics_data(data, fmt)
 
 def get_extrinsics_data(data, fmt):
     if fmt == "matrix":

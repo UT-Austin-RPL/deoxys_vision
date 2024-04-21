@@ -116,6 +116,7 @@ def main():
 
     img_counter = 0
     freq = 30.0
+    MAX_IMG_NUM = 653360
     while True:
         start_time = time.time_ns()
 
@@ -208,9 +209,9 @@ def main():
         camera2redis_pub_interface.set_img_info(img_info)
         camera2redis_pub_interface.set_img_buffer(imgs=imgs)
 
-        print(img_counter)
         if counter < COUNT_THRESH:
             img_counter += 1
+            img_counter = img_counter % MAX_IMG_NUM
 
         # if not args.eval:
         #     if counter < COUNT_THRESH:
@@ -241,7 +242,7 @@ def main():
         time_interval = (end_time - start_time) / (10 ** 9)
         if time_interval < 1.0 / freq:
             time.sleep(1.0 / freq - time_interval)
-            print(f"The camera node only took {time_interval} to transmit image")
+            # print(f"The camera node only took {time_interval} to transmit image")
 
         if camera2redis_pub_interface.finished:
             break

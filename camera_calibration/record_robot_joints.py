@@ -81,6 +81,7 @@ def main():
 
         with open(joint_info_json_filename, "w") as f:
             json.dump({"joints": save_joints}, f, indent=4)
+        print(f"Saving to {file_name}.json")
 
     robot_interface.close()
 
