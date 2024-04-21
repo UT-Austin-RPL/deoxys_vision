@@ -1,6 +1,7 @@
 """Utility functions that are standard to process """
 import numpy as np
 import cv2
+import struct
 
 def cv2_draw_polygon(img: np.ndarray,
                      points: list=[],
@@ -90,3 +91,19 @@ def preprocess_color(color_img, flip_channel=True):
 def preprocess_depth(depth_img):
     return np.ascontiguousarray(depth_img)
     
+
+def struct_encode_rgb(rgb_img):
+    h, w, c = rgb_img.shape
+    return struct.pack(">III", h, w, c) + rgb_img.tobytes()
+
+def struct_decode_rgb(encoded_rgb):
+    h, w, c = struct.unpack(">III", encoded_rgb[:12])
+    return np.frombuffer(encoded_rgb[12:], dtype=np.uint8).reshape(h, w, c)
+
+def struct_encode_depth(depth_img):
+    h, w = depth_img.shape
+    return struct.pack(">II", h, w) + depth_img.tobytes()
+
+def struct_decode_depth(encoded_depth):
+    h, w = struct.unpack(">II", encoded_depth[:8])
+    return np.frombuffer(encoded_depth[8:], dtype=np.uint16).reshape(h, w)
